@@ -1,9 +1,10 @@
-const mainTab = document.querySelector('.main')
-    , calBody = document.querySelector('.cal-body')
-    , nextBtn = document.querySelector('.next-btn')
-    , previousBtn = document.querySelector('.previous-btn');
+var monthList = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-// Each click updates a curDate. This makes date a key value when adding todo.
+const mainTab = document.querySelector('.main');
+const calBody = document.querySelector('.cal-body');
+const nextBtn = document.querySelector('.next-btn');
+const previousBtn = document.querySelector('.previous-btn');
+
 let curDate = new Date(); 
 
 const convertKeyToDate = (key) => {
@@ -20,10 +21,7 @@ const convertDateToKey = (date) => {
     return key;
 }
 
-/**
- * brief: Creates and renders a calendar based on the current date.
- * This function uses curDate variable to check current date.
- */
+
 const buildCalendar = () => {
 
     // first and last days of the month
@@ -40,8 +38,9 @@ const buildCalendar = () => {
     } else {
         weeks = 5;
     }
+    
+    mainTab.innerHTML = `${monthList[curDate.getMonth()]} - ${curDate.getFullYear()}`;
 
-    mainTab.innerHTML = `${curDate.getFullYear()} - ${curDate.getMonth() + 1}`;
     for (let i = 0; i < weeks; i++) {
         let row = calBody.insertRow();
         while (firstDay != 0) {

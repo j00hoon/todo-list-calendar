@@ -1,14 +1,17 @@
-const TDForm = document.querySelector('.add-task')
-    , TDInput = TDForm.querySelector('input')
-    , delayedTDList = document.querySelector('.delayed-todo')
-    , dailyContainer = document.querySelector('.daily')
-    , dailyTDList = dailyContainer.querySelector('.daily-todo');
+const TDForm = document.querySelector('.add-task');
+const TDInput = TDForm.querySelector('input');
+const deletedTDList = document.querySelector('.deleted-todo');
+const delayedTDList = document.querySelector('.delayed-todo');
+const dailyContainer = document.querySelector('.daily');
+const dailyTDList = dailyContainer.querySelector('.daily-todo');
 
-const DAILYTD_LS = 'dailyTD'
-    , DELAYEDTD_LS = 'delayedTD';
+const DAILYTD_LS = 'dailyTD';
+const DELAYEDTD_LS = 'delayedTD';
+const DELETED_LS = 'deletedTD';
 
-let dailyTDMaps = new Map(),
-    delayedTDMap = new Map();
+let dailyTDMaps = new Map();
+let delayedTDMap = new Map();
+let deletedTDMap = new Map();
 
 /**
  * Renders a current date on the daily ToDo Container
@@ -46,6 +49,14 @@ const parseDelayedTD = () => {
     if (delayedTDMap.size) {
         delayedTDMap.forEach((value, key) => {
             addTDToDOM(key, value, 'delayed');
+        });
+    }
+}
+
+const parseDeletedTD = () => {
+    if (deletedTDMap.size) {
+        deletedTDMap.forEach((value, key) => {
+            addTDToDOM(key, value, 'deleted');
         });
     }
 }
@@ -99,6 +110,7 @@ const handleDeleteTD = (e) => {
         delayedTDList.removeChild(li);
     }
 
+    deletedTDList.appendChild(li);
     saveMapToLS();
 }
 
@@ -162,6 +174,7 @@ const convertObjFromMaps = (TDMaps) => {
 const saveMapToLS = () => {
     saveDailyMapsToLS();
     saveDelyaedTDToLS();
+    saveDeletedTDToLS();
 }
 
 const saveDailyMapsToLS = () => {
@@ -174,12 +187,19 @@ const saveDelyaedTDToLS = () => {
     localStorage.setItem(DELAYEDTD_LS, JSON.stringify(TDObj));
 }
 
+const saveDeletedTDToLS = () => {
+    let TDObj = Object.fromEntries(deletedTDMap);
+    localStorage.setItem(DELETED_LS, JSON.stringify(TDObj));
+}
+
 /**
  * Load delayed ToDos and daily ToDos from localstorage
  */
 const loadTDFromLS = () => {
-    const loadedDailyTD = localStorage.getItem(DAILYTD_LS)
-        , loadedDelayedTD = localStorage.getItem(DELAYEDTD_LS);
+    const loadedDailyTD = localStorage.getItem(DAILYTD_LS);
+    const loadedDelayedTD = localStorage.getItem(DELAYEDTD_LS);
+    const loadedDeletedTD = localStorage.getItem(DELETED_LS);
+
     if (loadedDailyTD) {
         const TDObjs = JSON.parse(loadedDailyTD);
         dailyTDMaps = convertMapFromObj(TDObjs);
@@ -189,6 +209,11 @@ const loadTDFromLS = () => {
         const TDObj = JSON.parse(loadedDelayedTD);
         delayedTDMap = new Map(Object.entries(TDObj));
     }
+
+    if(loadedDeletedTD) {
+        const TDObj = JSON.parse(loadedDeletedTD);
+        deletedTDMap = new Map(Object.entries(TDObj));
+    }
 }
 
 /**
@@ -197,11 +222,11 @@ const loadTDFromLS = () => {
  * @param {Object} TDObj 
  */
 const createToDo = (key, value) => {
-    const li = document.createElement('li')    // new task
-        , spanValue = document.createElement('div')
-        , spanDate = document.createElement('div')
-        , delBtn = document.createElement('button')
-        , moveBtn = document.createElement('button');
+    const li = document.createElement('li');
+    const spanValue = document.createElement('div');
+    const spanDate = document.createElement('div');
+    const delBtn = document.createElement('button');
+    const moveBtn = document.createElement('button');
 
     let yearDigits = String(curDate.getFullYear()).substring(2,4);
 
@@ -213,25 +238,27 @@ const createToDo = (key, value) => {
     spanDate.className = 'time';
 
     delBtn.className = 'del-btn';
+    delBtn.textContent = 'Del';
     delBtn.addEventListener('click', handleDeleteTD);
 
     moveBtn.className = 'move-btn';
+    moveBtn.textContent = 'Delay';
     moveBtn.addEventListener('click', handleMoveTD);
 
     li.appendChild(spanValue);
     li.appendChild(spanDate);
+    
+    
     li.appendChild(delBtn);
     li.appendChild(moveBtn);
+
     return li;
 }
 
-/**
- * Creates a li element with the TDObj
- * Add the created li to the DOM (.daily)
- * @param {Object} TDObj
- */
+
+// Add the li tag to the DOM
 const addTDToDOM = (key, value, determinant) => {
-    const li = createToDo(key, value);    // task element
+    const li = createToDo(key, value);   
     switch (determinant) {
         case 'daily':
             dailyTDList.appendChild(li);
@@ -239,6 +266,11 @@ const addTDToDOM = (key, value, determinant) => {
 
         case 'delayed':
             delayedTDList.appendChild(li);
+            break;
+
+        case 'deleted':
+            deletedTDList.appendChild(li);
+            break;
     }
 }
 
@@ -264,6 +296,11 @@ const addTDToMap = (key, value, determinant) => {
 
         case 'delayed':
             delayedTDMap.set(key, value);
+            break;
+        
+        case 'deleted':
+            deletedTDMap.set(key, value);
+            break;
     }
 }
 
@@ -287,6 +324,11 @@ const removeTDMapItem = (key, determinant) => {
 
         case 'delayed':
             delayedTDMap.delete(key);
+            break;
+        
+        case 'deleted':
+            deletedTDMap.delete(key);
+            break;
     }
 }
 
@@ -315,6 +357,7 @@ const TDInit = () => {
     loadTDFromLS();
     syncTDToDate();
     parseDelayedTD();
+    parseDeletedTD();
     clickDate();
     submitTD();
 }

@@ -9,7 +9,7 @@
     </head>
     
     <body>
-        <div class="preloader">
+        <div class="spinnerImg">
             <img src="./img/spinner.svg" alt="spinner">
         </div>
         <div class='top-row'>
@@ -69,21 +69,26 @@
                     </table>
                 </div>
                   <form class='add-task'>
-                    <input type='text' placeholder='Add task!' autocomplete='off'>
+                    <input type='text' placeholder='Add task' autocomplete='off'>
                 </form>          
             </div>
             
             <div class='right-side'>
                 <div class='todo-container'>
                     <div class='daily'>
-                        <h1>daily</h1>
+                        <h1>Daily</h1>
                         <span class='curdate'></span>
                         <ul class='daily-todo'>
                         </ul>
                     </div>
                     <div class='delayed'>
-                        <h1>delayed</h1>
+                        <h1>Delayed</h1>
                         <ul class='delayed-todo'>
+                        </ul>     
+                    </div>
+                    <div class='deleted'>
+                        <h1>Deleted</h1>
+                        <ul class='deleted-todo'>
                         </ul>     
                     </div>
                 </div> 
@@ -91,10 +96,8 @@
         </div>
 
 
-        <script src='src/preloader.js'></script>
-        <script src='src/bg.js'></script>
+        <script src='src/spinnerImg.js'></script>
         <script src='src/clock.js'></script>
-        <script src='src/greeting.js'></script>
         <script src='src/weather.js'></script>
         <script src='src/calendar.js'></script>
         <script src='src/todo.js'></script>

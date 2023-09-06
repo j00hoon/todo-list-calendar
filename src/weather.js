@@ -1,8 +1,8 @@
-const placeDOM = document.querySelector('.location')
-    , temperatureDOM = document.querySelector('.temperature');
+const placeDOM = document.querySelector('.location');
+const temperatureDOM = document.querySelector('.temperature');
 
-const API_KEY = 'a29cb33b78a528c567aca30580f59c45'
-    , COORDS = 'coords';
+const API_KEY = 'a29cb33b78a528c567aca30580f59c45';
+const COORDS = 'coords';
 
 const getWeather1 = (lat, lng) => {
     fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${API_KEY}&units=metric`).then((response) => {
